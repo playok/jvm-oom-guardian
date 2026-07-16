@@ -1,0 +1,40 @@
+{
+  "socket": "~/.jvm_oom_guardian.sock",
+  "daemon": {
+    "pid_file": "~/.jvm_oom_guardian.pid",
+    "log_file": "~/.jvm_oom_guardian/server.log"
+  },
+  "logging": {
+    "directory": "~/.jvm_oom_guardian/logs",
+    "file_pattern": "jvm-oom-guardian-20060102.log",
+    "format": "json",
+    "rotate": true,
+    "max_bytes": 10485760,
+    "max_files": 7,
+    "retention_days": 30
+  },
+  "services": {
+    "my-tomcat": {
+      "pid_file": "/opt/tomcat/temp/catalina.pid",
+      "process_match": "-Dcatalina.base=/opt/tomcat",
+      "start_command": ["/opt/tomcat/bin/startup.sh"],
+      "work_dir": "/opt/tomcat",
+      "environment": {
+        "JAVA_HOME": "/usr/lib/jvm/java-17"
+      },
+      "exit_wait": "30s",
+      "stop_timeout": "10s",
+      "restart_delay": "2s",
+      "start_timeout": "30s",
+      "verify_timeout": "30s",
+      "restart_log_max_bytes": 10485760,
+      "restart_log_max_files": 7,
+      "restart_log_retention_days": 30,
+      "restart_limit": 5,
+      "restart_window": "10m",
+      "backoff_initial": "5s",
+      "backoff_max": "5m",
+      "restart_log": "/opt/tomcat/logs/oom-restarter.log"
+    }
+  }
+}

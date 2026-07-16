@@ -1,0 +1,20 @@
+[Unit]
+Description=Tomcat OOM restarter
+After=network.target
+
+[Service]
+Type=simple
+User=tomcat
+Group=tomcat
+ExecStart=/usr/local/bin/jvm-oom-guardian server --config /home/tomcat/.jvm_oom_guardian.json
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=120
+LimitNOFILE=1024
+TasksMax=128
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

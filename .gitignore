@@ -1,0 +1,7 @@
+/bin/
+/dist/
+/.cache/
+*.hprof
+hs_err_pid*.log
+core
+core.*

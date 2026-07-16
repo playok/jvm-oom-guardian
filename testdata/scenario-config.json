@@ -1,0 +1,41 @@
+{
+  "socket": "/tmp/jvm-oom-guardian-scenario.sock",
+  "daemon": {
+    "pid_file": "/tmp/jvm-oom-guardian-scenario-daemon.pid",
+    "log_file": "/tmp/jvm-oom-guardian-scenario-daemon.log"
+  },
+  "logging": {
+    "directory": "/tmp/jvm-oom-guardian-scenario-logs",
+    "file_pattern": "daemon-20060102.log",
+    "format": "json",
+    "rotate": true,
+    "max_bytes": 4096,
+    "max_files": 3,
+    "retention_days": 1
+  },
+  "services": {
+    "sample-tomcat": {
+      "pid_file": "/tmp/jvm-oom-guardian-scenario.pid",
+      "process_match": "OomTestDaemon",
+      "start_command": [
+        "/Users/jeongseonghan/workspace/java_oom_restarter/testdata/start-healthy.sh",
+        "/tmp/jvm-oom-guardian-scenario-classes",
+        "/tmp/jvm-oom-guardian-scenario.pid",
+        "/tmp/jvm-oom-guardian-scenario.ready"
+      ],
+      "exit_wait": "20s",
+      "stop_timeout": "3s",
+      "restart_delay": "100ms",
+      "start_timeout": "10s",
+      "verify_timeout": "10s",
+      "restart_log": "/tmp/jvm-oom-guardian-scenario-logs/tomcat-start.log",
+      "restart_log_max_bytes": 4096,
+      "restart_log_max_files": 3,
+      "restart_log_retention_days": 1,
+      "restart_limit": 3,
+      "restart_window": "10m",
+      "backoff_initial": "100ms",
+      "backoff_max": "1s"
+    }
+  }
+}
