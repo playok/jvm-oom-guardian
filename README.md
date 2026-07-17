@@ -1,5 +1,7 @@
 # jvm-oom-guardian
 
+[한국어 문서](README_kr.md)
+
 `jvm-oom-guardian` is a small, non-root-friendly supervisor for Java services. It receives `OutOfMemoryError` notifications over a Unix domain socket, terminates the failed JVM, and runs the configured Tomcat restart command.
 
 ## Build and run

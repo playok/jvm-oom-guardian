@@ -1,5 +1,7 @@
 # jvm-oom-guardian
 
+[English](README.md)
+
 Java JVM의 `OutOfMemoryError`를 감지하고, 로컬 Unix 도메인 소켓으로 외부 데몬에 통지해 장애 JVM을 종료한 뒤 Tomcat 서비스를 재시작하는 경량 가디언입니다.
 
 ## 빌드와 실행
