@@ -27,6 +27,25 @@ Stop the daemon with `server stop`; it removes the PID file and socket after shu
 
 The client sends a JSON event containing the service name, JVM PID, timestamp, and a random event ID to `~/.jvm_oom_guardian.sock` by default. The daemon validates PID ownership, stops the failed process, and executes the configured `start_command`.
 
+### Apache Tomcat `setenv.sh` example
+
+Create `$CATALINA_BASE/bin/setenv.sh` and make sure the Tomcat user can write the heap-dump directory and access the guardian socket:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+OOM_DIR="/var/lib/tomcat/oom"
+mkdir -p "$OOM_DIR"
+
+export CATALINA_OPTS="${CATALINA_OPTS:-} \\
+  -XX:+HeapDumpOnOutOfMemoryError \\
+  -XX:HeapDumpPath=$OOM_DIR \\
+  -XX:OnOutOfMemoryError='/usr/local/bin/jvm-oom-guardian notify --service my-tomcat --pid %p'"
+```
+
+The daemon must already be running as the same user before Tomcat starts. If a non-default socket is used, add `--socket /path/to/.jvm_oom_guardian.sock` to the notification command. Keep `%p` unchanged; the JVM substitutes it with the failing process ID.
+
 ## Configuration and logs
 
 Start with [`config.example.json`](config.example.json). It defines the socket, PID and daemon log files, service commands, rolling log directory, filename pattern, retention period, and maximum file count. Logs are date-rolled and old files are cleaned automatically.

@@ -27,6 +27,25 @@ cp config.example.json ~/.jvm_oom_guardian.json
 
 `notify`는 기본적으로 `~/.jvm_oom_guardian.sock`에 JSON 이벤트를 전송합니다. 데몬은 PID 소유자를 확인하고 해당 프로세스를 종료한 후 설정된 `start_command`를 실행합니다.
 
+### Apache Tomcat `setenv.sh` 설정 예시
+
+`$CATALINA_BASE/bin/setenv.sh`를 만들고 Tomcat 실행 사용자가 힙 덤프 디렉터리에 쓰기 권한을 가지며 guardian 소켓에 접근할 수 있도록 설정합니다.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+OOM_DIR="/var/lib/tomcat/oom"
+mkdir -p "$OOM_DIR"
+
+export CATALINA_OPTS="${CATALINA_OPTS:-} \\
+  -XX:+HeapDumpOnOutOfMemoryError \\
+  -XX:HeapDumpPath=$OOM_DIR \\
+  -XX:OnOutOfMemoryError='/usr/local/bin/jvm-oom-guardian notify --service my-tomcat --pid %p'"
+```
+
+Tomcat을 시작하기 전에 동일한 사용자로 guardian 데몬을 먼저 실행해야 합니다. 기본값이 아닌 소켓을 사용한다면 notify 명령에 `--socket /path/to/.jvm_oom_guardian.sock`을 추가하세요. `%p`는 JVM이 장애 프로세스 PID로 치환하므로 그대로 유지해야 합니다.
+
 ## 설정 및 로그
 
 `config.example.json`에서 소켓, PID 파일, 재시작 명령, 로그 디렉터리와 파일 패턴, 보관 기간 및 최대 파일 수를 설정할 수 있습니다. 로그는 날짜 기반 롤링과 오래된 파일 정리를 지원합니다.
