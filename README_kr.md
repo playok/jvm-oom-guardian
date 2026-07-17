@@ -46,6 +46,23 @@ export CATALINA_OPTS="${CATALINA_OPTS:-} \\
 
 Tomcat을 시작하기 전에 동일한 사용자로 guardian 데몬을 먼저 실행해야 합니다. 기본값이 아닌 소켓을 사용한다면 notify 명령에 `--socket /path/to/.jvm_oom_guardian.sock`을 추가하세요. `%p`는 JVM이 장애 프로세스 PID로 치환하므로 그대로 유지해야 합니다.
 
+## 프로그램 구조
+
+```mermaid
+flowchart LR
+    JVM[Apache Tomcat JVM\nsetenv.sh] -->|OutOfMemoryError| DUMP[Heap dump + hs_err 로그]
+    JVM -->|OnOutOfMemoryError\nnotify --pid %p| CLIENT[Guardian notify 클라이언트]
+    CLIENT -->|Unix 소켓 JSON| SOCKET[(~/.jvm_oom_guardian.sock)]
+    SOCKET --> DAEMON[Guardian server 데몬]
+    DAEMON --> CHECK[PID·서비스·프로세스 식별 검증]
+    CHECK -->|승인| STOP[장애 JVM 종료]
+    STOP --> START[설정된 start_command 실행]
+    START --> JVM2[재시작된 Tomcat JVM]
+    DAEMON --> LOG[롤링 데몬·재시작 로그]
+```
+
+데몬은 JVM 외부에서 실행되므로 OOM으로 JVM이 종료된 뒤에도 서비스를 재시작할 수 있으며, 장애 순간 Tomcat 내부 기능에 의존하지 않습니다.
+
 ## 설정 및 로그
 
 `config.example.json`에서 소켓, PID 파일, 재시작 명령, 로그 디렉터리와 파일 패턴, 보관 기간 및 최대 파일 수를 설정할 수 있습니다. 로그는 날짜 기반 롤링과 오래된 파일 정리를 지원합니다.

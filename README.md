@@ -46,6 +46,23 @@ export CATALINA_OPTS="${CATALINA_OPTS:-} \\
 
 The daemon must already be running as the same user before Tomcat starts. If a non-default socket is used, add `--socket /path/to/.jvm_oom_guardian.sock` to the notification command. Keep `%p` unchanged; the JVM substitutes it with the failing process ID.
 
+## Architecture
+
+```mermaid
+flowchart LR
+    JVM[Apache Tomcat JVM\nsetenv.sh] -->|OutOfMemoryError| DUMP[Heap dump + hs_err log]
+    JVM -->|OnOutOfMemoryError\nnotify --pid %p| CLIENT[Guardian notify client]
+    CLIENT -->|JSON over Unix socket| SOCKET[(~/.jvm_oom_guardian.sock)]
+    SOCKET --> DAEMON[Guardian server daemon]
+    DAEMON --> CHECK[Validate PID, service and process identity]
+    CHECK -->|accepted| STOP[Terminate failed JVM]
+    STOP --> START[Run configured start_command]
+    START --> JVM2[Restarted Tomcat JVM]
+    DAEMON --> LOG[Rolling daemon and restart logs]
+```
+
+The daemon is external to the JVM, so it can restart the service after the JVM has terminated and does not depend on Tomcat internals during an out-of-memory failure.
+
 ## Configuration and logs
 
 Start with [`config.example.json`](config.example.json). It defines the socket, PID and daemon log files, service commands, rolling log directory, filename pattern, retention period, and maximum file count. Logs are date-rolled and old files are cleaned automatically.
