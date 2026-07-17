@@ -36,4 +36,11 @@ goreleaser release --clean
 
 Install [GoReleaser](https://goreleaser.com/) and create a Git tag before running a release. GoReleaser produces Linux, macOS, and Windows archives for amd64 (plus arm64 on Linux and macOS), including the configuration and documentation files. Use `make release-snapshot` to build locally without publishing.
 
+Pushing a semantic-version tag automatically publishes a GitHub Release with the generated archives and `checksums.txt`:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
 The reproducible OOM scenario is documented in [`testdata/SCENARIO.md`](testdata/SCENARIO.md). Run the daemon as the service user and verify command paths and permissions before production deployment.

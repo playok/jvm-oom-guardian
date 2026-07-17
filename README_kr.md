@@ -36,3 +36,12 @@ make release-snapshot
 ```
 
 정식 릴리스는 Go 태그를 만든 뒤 `make release`를 실행합니다. GoReleaser가 Linux, macOS, Windows용 amd64 바이너리와 Linux/macOS arm64 바이너리를 각각 압축해 생성합니다. 자세한 장애 재현 절차는 [`testdata/SCENARIO.md`](testdata/SCENARIO.md)를 참고하세요.
+
+GitHub Release에 파일을 자동으로 올리려면 버전 태그를 푸시하세요.
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+GitHub Actions가 GoReleaser를 실행해 각 플랫폼 압축 파일과 `checksums.txt`를 Release의 Assets에 첨부합니다.
