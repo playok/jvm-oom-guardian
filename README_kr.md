@@ -31,6 +31,8 @@ cp config.example.json ~/.jvm_oom_guardian.json
 
 ```bash
 ./scripts/test.sh
+# 로컬 GoReleaser 산출물만 생성
+make release-snapshot
 ```
 
-자세한 장애 재현 절차는 [`testdata/SCENARIO.md`](testdata/SCENARIO.md)를 참고하세요. 운영 환경에서는 권한이 없는 사용자로 데몬을 실행하고, 서비스 명령과 경로를 검증한 뒤 적용하십시오.
+정식 릴리스는 Go 태그를 만든 뒤 `make release`를 실행합니다. GoReleaser가 Linux, macOS, Windows용 amd64 바이너리와 Linux/macOS arm64 바이너리를 각각 압축해 생성합니다. 자세한 장애 재현 절차는 [`testdata/SCENARIO.md`](testdata/SCENARIO.md)를 참고하세요.

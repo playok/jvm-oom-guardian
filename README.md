@@ -31,7 +31,9 @@ Start with [`config.example.json`](config.example.json). It defines the socket, 
 
 ```bash
 ./scripts/test.sh
-./scripts/release.sh v1.0.0
+goreleaser release --clean
 ```
+
+Install [GoReleaser](https://goreleaser.com/) and create a Git tag before running a release. GoReleaser produces Linux, macOS, and Windows archives for amd64 (plus arm64 on Linux and macOS), including the configuration and documentation files. Use `make release-snapshot` to build locally without publishing.
 
 The reproducible OOM scenario is documented in [`testdata/SCENARIO.md`](testdata/SCENARIO.md). Run the daemon as the service user and verify command paths and permissions before production deployment.

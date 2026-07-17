@@ -367,7 +367,7 @@ func readDaemonPID(path string) (int, error) {
 }
 
 func daemonRunning(pid int) bool {
-	if err := syscall.Kill(pid, 0); err != nil {
+	if err := processExists(pid); err != nil {
 		return false
 	}
 	command, err := processCommand(pid)
@@ -401,7 +401,7 @@ func startDaemon(configPath string, daemon daemonConfig) error {
 	cmd := exec.Command(executable, "server", "run", "--config", configPath)
 	// Detach from the invoking shell so server start survives the parent
 	// process/terminal exiting. All standard streams are redirected below.
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
+	detachCommand(cmd)
 	cmd.Stdin = stdin
 	cmd.Stdout = logFile
 	cmd.Stderr = logFile
@@ -430,7 +430,7 @@ func stopDaemon(daemon daemonConfig) error {
 		fmt.Println("daemon is not running (stale PID file removed)")
 		return nil
 	}
-	if err := syscall.Kill(pid, syscall.SIGTERM); err != nil {
+	if err := signalPID(pid, false); err != nil {
 		return fmt.Errorf("stop daemon: %w", err)
 	}
 	deadline := time.NewTimer(10 * time.Second)
@@ -440,7 +440,7 @@ func stopDaemon(daemon daemonConfig) error {
 	for daemonRunning(pid) {
 		select {
 		case <-deadline.C:
-			if err := syscall.Kill(pid, syscall.SIGKILL); err != nil && !errors.Is(err, syscall.ESRCH) {
+			if err := signalPID(pid, true); err != nil && !errors.Is(err, os.ErrProcessDone) {
 				return fmt.Errorf("force stop daemon: %w", err)
 			}
 		case <-ticker.C:

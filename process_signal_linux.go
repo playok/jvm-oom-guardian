@@ -3,8 +3,18 @@
 package main
 
 import (
+	"os/exec"
 	"syscall"
 )
+
+func processExists(pid int) error { return syscall.Kill(pid, 0) }
+func signalPID(pid int, force bool) error {
+	if force {
+		return syscall.Kill(pid, syscall.SIGKILL)
+	}
+	return syscall.Kill(pid, syscall.SIGTERM)
+}
+func detachCommand(cmd *exec.Cmd) { cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true} }
 
 // Linux pidfds bind a signal to the original process, eliminating the PID
 // reuse race between identity checking and signal delivery.
