@@ -1,5 +1,7 @@
 # jvm-oom-guardian
 
+[![CI](https://github.com/playok/jvm-oom-guardian/actions/workflows/ci.yml/badge.svg)](https://github.com/playok/jvm-oom-guardian/actions/workflows/ci.yml) [![Release](https://img.shields.io/github/v/release/playok/jvm-oom-guardian)](https://github.com/playok/jvm-oom-guardian/releases) [![License](https://img.shields.io/github/license/playok/jvm-oom-guardian)](LICENSE)
+
 [한국어 문서](README_kr.md)
 
 `jvm-oom-guardian` is a small, non-root-friendly supervisor for Java services. It receives `OutOfMemoryError` notifications over a Unix domain socket, terminates the failed JVM, and runs the configured Tomcat restart command.
